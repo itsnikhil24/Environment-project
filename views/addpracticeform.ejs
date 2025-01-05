@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Sustainable Practice</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f8f8;
+            padding: 40px;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 2em;
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        label {
+            display: block;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], input[type="number"], textarea, input[type="file"], select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        select:focus, input[type="text"]:focus, input[type="number"]:focus, textarea:focus, input[type="file"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #777;
+        }
+
+        .form-footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .file-upload-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .file-upload-container input[type="file"] {
+            width: auto;
+            padding: 10px 20px;
+        }
+
+        .points-display {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Submit Your Sustainable Practice</h1>
+    <form action="/practices" method="POST" enctype="multipart/form-data">
+        <label for="practice">Sustainable Practice</label>
+        <select id="practice" name="practice" onchange="updatePoints()" required>
+            <option value="">Select a practice</option>
+            <option value="Using Renewable Energy" data-points="10">Using Renewable Energy - 10 Points</option>
+            <option value="Recycling Waste" data-points="8">Recycling Waste - 8 Points</option>
+            <option value="Water Conservation Practices" data-points="12">Water Conservation Practices - 12 Points</option>
+            <option value="Energy-Efficient Lighting" data-points="6">Energy-Efficient Lighting - 6 Points</option>
+            <option value="Green Building Materials" data-points="14">Green Building Materials - 14 Points</option>
+            <option value="Sustainable Agriculture Practices" data-points="15">Sustainable Agriculture Practices - 15 Points</option>
+            <option value="Eco-Friendly Packaging" data-points="9">Eco-Friendly Packaging - 9 Points</option>
+        </select>
+
+        <label for="description">Description of the Practice</label>
+        <textarea id="description" name="description" placeholder="Describe how this practice helps reduce environmental impact" rows="4" required></textarea>
+
+        <label for="points">Points Awarded</label>
+        <input type="number" id="points" name="points" placeholder="e.g., 10" readonly required>
+
+        <label for="proofFile">Proof of Implementation</label>
+        <div class="file-upload-container">
+            <input type="file" id="proofFile" name="proofFile" accept="image/*,application/pdf" required>
+        </div>
+
+        <!-- Hidden field to store the factoryId -->
+        <input type="hidden" name="factoryId" value="<%= factoryId %>">
+
+        <input type="submit" value="Submit Practice">
+    </form>
+
+    <div class="form-footer">
+        <p>Want to learn more about sustainable practices? <a href="#">Click here</a> for tips.</p>
+    </div>
+
+    <script>
+        // Function to update points when a practice is selected
+        function updatePoints() {
+            const practiceSelect = document.getElementById('practice');
+            const pointsInput = document.getElementById('points');
+            const selectedOption = practiceSelect.options[practiceSelect.selectedIndex];
+    
+            // Ensure selectedOption exists and has a valid data-points attribute
+            const points = selectedOption && selectedOption.getAttribute('data-points');
+            
+            // Set points value only if a valid points value is found
+            if (points && !isNaN(points)) {
+                pointsInput.value = points;
+            } else {
+                pointsInput.value = '';  // Clear points if no valid option is selected
+            }
+        }
+    </script>
+    
+    
+</body>
+</html>

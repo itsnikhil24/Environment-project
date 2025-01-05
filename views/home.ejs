@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Finlink</title>
+    <link rel="stylesheet" href="stylesheets/home.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <!-- Left Side: Logo -->
+        <div class="logo">
+          <h1 style="color: aliceblue;">FinLink</h1>
+        </div>
+
+        <!-- Middle: Navbar Options -->
+        <ul class="nav-links">
+          <li><a href="/home">Home</a></li>
+          <li><a href="#contact-us">Contact Us</a></li>
+          <li><a href="/profile">Profile</a></li>
+        </ul>
+
+        <!-- Right Side: Get Started Button -->
+        <div class="get-started">
+          <a href="/financialland"><button>Get Started</button></a>
+        </div>
+
+        <!-- Hamburger Menu for Mobile -->
+        <div class="hamburger-menu" id="hamburger-menu">
+          <span>&#9776;</span>
+        </div>
+      </nav>
+    </header>
+
+    <div class="two-column">
+      <div class="text">
+        <h1>Invest with Confidence</h1>
+        <p>
+          Unlock the full potential of your investments by partnering with
+          experienced market experts. Get tailored advice and actionable
+          insights to navigate complex markets with confidence.
+        </p>
+        <a href="/financialland" class="btn">Get Started</a>
+      </div>
+      <div class="image">
+        <img src="images\6884036-removebg-preview.png" alt="Investment Icon" />
+      </div>
+    </div>
+
+    <section class="features-section">
+      <div class="features-header">
+        <h1>Unlock the Full Potential of Your Investments</h1>
+        <p>
+          Partner with seasoned market experts to take your financial journey to
+          the next level. With our platform, you’ll gain access to personalized
+          strategies and actionable insights tailored to your unique goals
+        </p>
+       <a href="/financialland"><button class="explore-button">Explore More <span>→</span></button></a> 
+      </div>
+      <div class="features-cards">
+        <div class="feature-card">
+          <h4>Expert Financial Advice for a Secure Future</h4>
+          <p>
+            Get personalized financial advice from industry experts to help you
+            manage your money better, plan your investments wisely, and achieve
+            your financial goals.
+          </p>
+          <a href="/financialland"><button class="explore-button">Get Financial Help</button></a> 
+        </div>
+        <div class="feature-card">
+          <h4>"Connect. Collaborate. Fulfill Each Others Needs.</h4>
+          <p>
+            A unique community-driven platform where users from diverse
+            backgrounds can exchange services or resources
+          </p>
+          <a href="/barter"><button class="explore-button">Explore Barter System</button></a> 
+        </div>
+        <div class="feature-card">
+          <h4>Track Your Financial Progress and Achieve Your Goals</h4>
+          <p>
+            Stay in control of your financial journey with our intuitive growth
+            tracking features. Monitor your portfolios performance, set
+            milestones, and analyze trends to ensure youre always moving towards
+            your goals
+          </p>
+          <a href="/profile"><button class="explore-button">See My Profile</button></a> 
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-content">
+        <div class="brand-info">
+          <img src="logo.png" alt="Memberbase logo" class="logo" />
+          <p>Built by <a href="#">Ambika & Nikhil</a>. Powered by Finlink.</p>
+          <p>© 2024 Finlink . All Rights Reserved.</p>
+        </div>
+        <div class="footer-links">
+          <div class="column">
+            <h4>WEBSITE</h4>
+            <ul>
+              <li><a href="/home">Home</a></li>
+              <li><a href="/home">Resources</a></li>
+              <li><a href="#">Contact</a></li>
+              <li><a href="#">Ebook (CMS)</a></li>
+              <li><a href="#">Terms & Conditions</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+            </ul>
+          </div>
+          <div class="column">
+            <h4>Finlink</h4>
+            <ul>
+              <li><a href="#">User Account</a></li>
+              <li><a href="#">Reset Password</a></li>
+            </ul>
+          </div>
+          <div class="column">
+            <h4>ADMIN</h4>
+            <ul>
+              <li><a href="#">Style Guide</a></li>
+              <li><a href="#">Licenses</a></li>
+              <li><a href="#">Instructions</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.2/socket.io.js"
+    integrity="sha512-VJ6+sp2E5rFQk05caiXXzQd1wBABpjEj1r5kMiLmGAAgwPItw1YpqsCCBtq8Yr1x6C49/mTpRdXtq8O2RcZhlQ=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  ></script>
+  <script>
+    const hamburgerMenu = document.getElementById("hamburger-menu");
+    const navLinks = document.querySelector(".nav-links");
+    var sender_id = '<%= userId %>'; // Ensure userId is correctly passed from the server-rendered view
+var socket = io("/user-namespace", {
+  auth: {
+    token: sender_id, // Pass the correct userId
+  },
+});
+
+    hamburgerMenu.addEventListener("click", () => {
+      navLinks.classList.toggle("active");
+    });
+
+    let lastScrollY = window.scrollY;
+    const navbar = document.querySelector(".navbar");
+
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > lastScrollY) {
+        // Scrolling down, hide navbar
+        navbar.classList.add("hidden");
+      } else {
+        // Scrolling up, show navbar
+        navbar.classList.remove("hidden");
+      }
+      lastScrollY = window.scrollY;
+    });
+  </script>
+</html>
