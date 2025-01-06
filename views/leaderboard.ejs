@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leaderboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      font-family: 'Arial', sans-serif;
+      background-color: #121212; /* Main background color */
+      color: #e0e0e0; /* Text color */
+    }
+
+    /* Sidebar styles */
+    .sidebar {
+      width: 130px;
+      height: 100vh;
+      background-color: #1f1f1f; /* Sidebar background */
+      color: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .menu a {
+      padding: 15px 20px;
+      text-decoration: none;
+      color: #bdbdbd;
+      border-bottom: 1px solid #2b2b2b;
+      font-size: 16px;
+      transition: background-color 0.3s, color 0.3s ease;
+    }
+
+    .menu a:hover {
+      background-color: #333;
+      color: #ffffff;
+    }
+
+    .logout {
+      padding: 15px 20px;
+      text-align: center;
+      color: #e0e0e0;
+      background-color: #292929; /* Logout button background */
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s ease;
+    }
+
+    .logout:hover {
+      background-color: #444;
+    }
+
+    /* Main container */
+    .main-container {
+      margin-left: 130px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navbar styles */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #1f1f1f; /* Navbar background */
+      padding: 10px 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    }
+
+    .navbar .home {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #e0e0e0;
+    }
+
+    .navbar .search-bar {
+      flex: 1;
+      margin: 0 20px;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #333;
+      background-color: #292929;
+      color: #ffffff;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    .navbar .profile-section {
+      display: flex;
+      align-items: center;
+    }
+
+    .profile-section span {
+      margin-right: 10px;
+    }
+
+    .profile-section .profile-pic {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* Leaderboard table */
+    .leaderboard {
+      margin: 20px;
+      background-color: #1f1f1f;
+      border-collapse: collapse;
+      width: 98%;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+    }
+
+    .leaderboard th,
+    .leaderboard td {
+      padding: 15px;
+      text-align: left;
+    }
+
+    .leaderboard th {
+      background-color: #292929; /* Header background */
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #bdbdbd;
+    }
+
+    .leaderboard td {
+      background-color: #1f1f1f; /* Row background */
+      border-bottom: 1px solid #2b2b2b;
+      color: #e0e0e0;
+    }
+
+    .leaderboard tr:hover td {
+      background-color: #333; /* Highlight row on hover */
+    }
+
+    .serial-number {
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .trophy {
+      text-align: center;
+    }
+
+    /* Trophy Icon Styling */
+    .trophy-icon {
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="menu">
+      <a href="#home">Home</a>
+      <a href="#explore">Explore</a>
+      <a href="#chat">Chat</a>
+      <a href="#profile">Profile</a>
+    </div>
+    <div class="logout">Logout</div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-container">
+    <!-- Navbar -->
+    <div class="navbar">
+      <div class="home">Leaderboard</div>
+      <div class="search-bar">
+        <input type="text" placeholder="Search factories..." />
+      </div>
+      <div class="profile-section">
+        <span>My Profile</span>
+        <img
+          src="<%=profilePic%>"
+          alt="Profile Picture"
+          class="profile-pic"
+        />
+      </div>
+    </div>
+
+    <!-- Leaderboard Table -->
+    <table class="leaderboard">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Factory Name</th>
+          <th>Points</th>
+          <th>Trophy</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboard">
+        <!-- Rows will be dynamically added here using JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // Fetch leaderboard data and populate the table
+    async function fetchLeaderboard() {
+      try {
+        const response = await fetch('/api/leaderboard'); // Adjust the endpoint
+        const data = await response.json();
+
+        const leaderboardContainer = document.getElementById('leaderboard');
+        leaderboardContainer.innerHTML = '';
+
+        data.forEach((factory, index) => {
+          const points = factory.Points || 0; // Default to 0 if points are undefined
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td class="serial-number">${index + 1}</td>
+            <td>${factory.name}</td>
+            <td>${points}</td>
+            <td class="trophy">${getTrophyIcon(points)}</td>
+          `;
+          leaderboardContainer.appendChild(row);
+        });
+      } catch (err) {
+        console.error('Error fetching leaderboard:', err);
+      }
+    }
+
+    // Trophy icons based on points
+    const getTrophyIcon = (points) => {
+      if (points >= 200) return '<span class="trophy-icon">🏆</span>'; // Gold Trophy
+      if (points >= 100) return '<span class="trophy-icon">🥈</span>'; // Silver Trophy
+      if (points >= 50) return '<span class="trophy-icon">🥉</span>'; // Bronze Trophy
+      return '<span class="trophy-icon">🔰</span>'; // Participation Trophy
+    };
+
+    // Fetch leaderboard data on page load
+    window.onload = fetchLeaderboard;
+  </script>
+</body>
+</html>

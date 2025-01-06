@@ -13,6 +13,8 @@ router.post("/register", upload.single("profile_pic"), usercontroller.createUser
 router.post("/login", usercontroller.login); // Use multer middleware
 router.post('/practices',  upload.single('proofFile'), usercontroller.addPractice);
 router.get('/practices',  usercontroller.addPracticeform);
+router.get('/api/leaderboard',  usercontroller.leaderboard);
+router.get('/leaderboard',  usercontroller.leaderboardpage);
 
 
 module.exports = router; // Ensure this exports the router

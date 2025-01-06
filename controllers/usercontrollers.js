@@ -11,6 +11,56 @@ exports.loginpage=(req,res)=>{
 exports.registerpage=(req,res)=>{
   res.render("register.ejs");
 }
+exports.leaderboardpage=(req,res)=>{
+  const token = req.cookies.token; // Assuming cookie is named 'token'
+  if (!token) {
+      return res.status(401).send({ message: 'Not authenticated' });
+  }
+
+  // Verify the token and decode it
+  const decoded = jwt.verify(token, 'secretKey'); // 'secretKey' should match the one used during login
+  const factoryusername = decoded.username; // Factory ID from the decoded token
+
+  user.findOne({ username: factoryusername })
+    .then(user => {
+        if (!user) {
+            return res.status(404).send({ message: 'User not found' });
+        }
+
+        // Extract the user's profile picture
+        const profilePic = user.profile_pic; // Assuming profile_pic is an array of image URLs
+
+        if (profilePic.length > 0) {
+          res.render("leaderboard.ejs",{profilePic: profilePic[0]});// Send the first image in the array (or customize this based on your needs)
+        } 
+        else {
+          res.render("leaderboard.ejs");
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        return res.status(500).send({ message: 'Error fetching user data' });
+    });
+
+
+ 
+ 
+}
+exports.leaderboard = async (req, res) => {
+  try {
+    const factories = await user
+      .find()
+      .select('username name profile_pic Points practices') // Select only the required fields
+      .populate('practices') // Populate practices with specific fields
+      .sort({ Points: -1 }); // Sort by Points in descending order
+
+    res.status(200).send(factories); // Send the sorted data
+  } catch (err) {
+    console.error('Error fetching leaderboard:', err);
+    res.status(500).send({ error: 'Internal server error' });
+  }
+};
+
 exports.addPracticeform=(req,res)=>{
   const token = req.cookies.token; // Assuming cookie is named 'token'
         if (!token) {
@@ -117,14 +167,14 @@ exports.createUser = async (req, res) => {
   exports.addPractice = async (req, res) => {
     try {
         // Extract factory ID from the cookie
-        const token = req.cookies.token;  // Assuming cookie is named 'token'
+        const token = req.cookies.token; // Assuming cookie is named 'token'
         if (!token) {
             return res.status(401).send({ message: 'Not authenticated' });
         }
 
         // Verify the token and decode it
-        const decoded = jwt.verify(token, 'secretKey');  // 'secretKey' should match the one used during login
-        const factoryId = decoded.id;  // Factory ID from the decoded token
+        const decoded = jwt.verify(token, 'secretKey'); // 'secretKey' should match the one used during login
+        const factoryId = decoded.id; // Factory ID from the decoded token
 
         const { practice, description, points } = req.body;
 
@@ -146,28 +196,41 @@ exports.createUser = async (req, res) => {
             return res.status(400).send({ message: 'Proof file is required' });
         }
 
-        // Upload proof file to Cloudinary
+        // Upload proof file to Cloudinary (or another storage service)
         const proofFileUrl = await exports.upload(req.file.buffer);
 
         // Create a new practice record in the database
         const newPractice = new Practice({
-            factory: factoryId,  // Use the factory ID from the cookie
+            factory: factoryId, // Use the factory ID from the cookie
             practice,
             description,
-            points: parsedPoints,  // Store the points but do not update factory points yet
+            points: parsedPoints, // Store the points but do not update factory points yet
             proofFile: proofFileUrl,
-            status: 'pending',  // Set initial status as 'pending'
+            status: 'pending', // Set initial status as 'pending'
         });
 
         // Save the new practice record to the database
-        await newPractice.save();
+        const savedPractice = await newPractice.save();
 
-        res.status(201).send({ message: 'Practice submitted successfully', practice: newPractice });
+        // Link the practice to the user's practices array
+        const user = await user.findById(factoryId);
+        if (!user) {
+            return res.status(404).send({ message: 'User not found' });
+        }
+
+        user.practices.push(savedPractice._id);
+        await user.save();
+
+        res.status(201).send({
+            message: 'Practice submitted successfully. Awaiting admin verification.',
+            practice: savedPractice,
+        });
     } catch (err) {
         console.error('Error during practice submission:', err);
         res.status(500).send({ error: 'Internal server error' });
     }
 };
+
 
   
 
