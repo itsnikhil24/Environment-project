@@ -15,6 +15,7 @@ router.post('/practices',  upload.single('proofFile'), usercontroller.addPractic
 router.get('/practices',  usercontroller.addPracticeform);
 router.get('/api/leaderboard',  usercontroller.leaderboard);
 router.get('/leaderboard',  usercontroller.leaderboardpage);
+router.get('/home',  usercontroller.home);
 
 
 module.exports = router; // Ensure this exports the router

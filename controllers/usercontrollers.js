@@ -11,6 +11,9 @@ exports.loginpage=(req,res)=>{
 exports.registerpage=(req,res)=>{
   res.render("register.ejs");
 }
+exports.home=(req,res)=>{
+  res.render("home.ejs");
+}
 exports.leaderboardpage=(req,res)=>{
   const token = req.cookies.token; // Assuming cookie is named 'token'
   if (!token) {

@@ -166,16 +166,24 @@
     .trophy-icon {
       font-size: 1.2rem;
     }
+    .profile-section a {
+      color: white;
+      text-decoration: none;
+    }
+    .profile-section a :hover{
+      color: #9b59b6;
+
+    }
   </style>
 </head>
 <body>
   <!-- Sidebar -->
   <div class="sidebar">
     <div class="menu">
-      <a href="#home">Home</a>
-      <a href="#explore">Explore</a>
-      <a href="#chat">Chat</a>
-      <a href="#profile">Profile</a>
+      <a href="/home">Home</a>
+      <a href="/practices">Add new Practice</a>
+      <a href="/Leaderboard">Leaderboard</a>
+      <a href="/profile">Profile</a>
     </div>
     <div class="logout">Logout</div>
   </div>
@@ -184,12 +192,12 @@
   <div class="main-container">
     <!-- Navbar -->
     <div class="navbar">
-      <div class="home">Leaderboard</div>
+      <a href="/home" style="text-decoration: none;"><div class="home">Leaderboard</div></a>
       <div class="search-bar">
         <input type="text" placeholder="Search factories..." />
       </div>
       <div class="profile-section">
-        <span>My Profile</span>
+        <a href="/myprofile"><span>My Profile</span></a>
         <img
           src="<%=profilePic%>"
           alt="Profile Picture"

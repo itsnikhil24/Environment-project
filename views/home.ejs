@@ -6,12 +6,418 @@
     <title>Finlink</title>
     <link rel="stylesheet" href="stylesheets/home.css" />
   </head>
+  <style>
+  /* Basic Reset */
+.navbar.hidden {
+    top: -70px; /* Adjust this based on the navbar height */
+  }
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-image: url("../images/5641363.jpg");
+    background-size: cover; /* Scale image to cover entire page */
+    background-position: center; /* Center the image */
+    /* background-repeat: no-repeat; Avoid repeating the image */
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    
+}
+
+/* Navbar Styling */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 50px;
+    /* position: fixed; */
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.2); /* Transparent background */
+    backdrop-filter: blur(10px); /* Optional: adds blur effect to background */
+    z-index: 100;
+    transition: top 0.5s ease; /* Smooth ease effect */
+}
+
+/* Logo Styling */
+.logo img {
+    width: 120px;
+    height: auto;
+}
+
+/* Navbar Links Styling */
+.nav-links {
+    list-style-type: none;
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links li {
+    display: inline;
+}
+
+.nav-links a {
+    text-decoration: none;
+    font-size: 18px;
+    color: white;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #ff9800; /* Highlight color on hover */
+}
+
+/* Get Started Button Styling */
+.get-started button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: white;
+    color: #333;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 50px;
+}
+
+.get-started button:hover {
+    background-color: #ff9800; /* Button hover color */
+    color: white;
+}
+
+/* Hamburger Menu Styling */
+.hamburger-menu {
+    display: none;
+    cursor: pointer;
+    font-size: 30px;
+    color: white;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 10px 20px;
+    }
+    
+    .nav-links {
+        display: none; /* Hide the links by default */
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .nav-links.active {
+        display: flex; /* Show the links when 'active' class is added */
+        align-items: start;
+    }
+
+    .hamburger-menu {
+        display: block; /* Show hamburger menu on small screens */
+    }
+
+    .nav-links a {
+        font-size:0.5em;
+        color: #333;
+        padding: 1em;
+        background-color: white;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        margin: 4px;
+    }
+
+    .nav-links a:hover {
+        background-color: #ff9800; /* Highlight color on hover */
+        color: white;
+    }
+
+    .get-started button {
+        width: 100%;
+        padding: 15px;
+        background-color: white;
+        border: 2px solid #333;
+    }
+}
+
+.two-column {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4em;
+    /* margin-bottom: 10em; */
+    padding-left: 50px;
+    padding-right: 50px;
+    /* background-color: #ffffff; */
+    background: transparent;
+    height: auto;
+    
+  }
+  
+  .two-column .text {
+    width: 60%;
+    line-height: 2.5em;
+  }
+  
+  .two-column .text h1 {
+    font-size: 4rem;
+    font-weight: bold;
+    color: aliceblue;
+  }
+  
+  .two-column .text p {
+    font-size: 1.5rem;
+    color:aliceblue;
+    margin: 15px 0;
+  }
+  
+  .two-column .btn {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #98c1d9;
+    color: black;
+    font-size: 1rem;
+    text-decoration: none;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+  
+  .two-column .btn:hover {
+    transform: scale(1.05);
+  }
+  
+  .two-column .image {
+    width: 35%;
+    
+  }
+  
+  .two-column .image img {
+    width: 100%;
+    height: auto;
+    border-radius: 30px;
+    background-color: transparent;
+    transform: scaleX(-1);
+    
+  }
+
+  /*Footer styling*/
+
+  footer {
+    background-color: #222; /* Dark background for the footer */
+    color: #fff; /* White text color */
+    padding: 40px 20px; /* Space inside the footer */
+    font-family: Arial, sans-serif;
+  }
+  
+  .footer-content {
+    display: flex; /* Arrange content in columns */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    justify-content: space-between; /* Add space between columns */
+    align-items: flex-start; /* Align content at the top */
+    max-width: 1200px; /* Limit footer width */
+    margin: 0 auto; /* Center footer content */
+  }
+  
+  .brand-info {
+    flex: 1 1 300px; /* Flexible width, minimum 300px */
+    margin-bottom: 20px;
+  }
+  
+  .brand-info .logo {
+    width: 150px; /* Logo width */
+    margin-bottom: 10px; /* Space below logo */
+  }
+  
+  .brand-info p {
+    font-size: 0.9rem; /* Smaller font size */
+    margin: 5px 0; /* Space between paragraphs */
+  }
+  
+  .brand-info a {
+    color: #00c9ff; /* Highlighted link color */
+    text-decoration: none; /* Remove underline */
+    transition: color 0.3s ease;
+  }
+  
+  .brand-info a:hover {
+    color: #00a3cc; /* Change link color on hover */
+  }
+  
+  .footer-links {
+    display: flex; /* Arrange links in columns */
+    gap: 30px; /* Space between columns */
+    flex: 2 1 600px; /* Flexible width, minimum 600px */
+  }
+  
+  .column {
+    flex: 1; /* Each column takes equal width */
+    min-width: 150px; /* Minimum column width */
+  }
+  
+  .column h4 {
+    font-size: 1rem; /* Section title size */
+    margin-bottom: 10px; /* Space below the heading */
+    text-transform: uppercase; /* Uppercase text */
+    color: #00c9ff; /* Highlighted section heading */
+  }
+  
+  .column ul {
+    list-style: none; /* Remove bullets */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margin */
+  }
+  
+  .column li {
+    margin-bottom: 8px; /* Space between list items */
+  }
+  
+  .column a {
+    text-decoration: none; /* Remove underline */
+    color: #ccc; /* Light gray link color */
+    font-size: 0.9rem; /* Slightly smaller font size */
+    transition: color 0.3s ease;
+  }
+  
+  .column a:hover {
+    color: #fff; /* Highlight link color on hover */
+  }
+  
+  footer p {
+    font-size: 0.85rem; /* Small footer text */
+    color: #aaa; /* Light gray footer text */
+  }
+  
+  @media screen and (max-width: 768px) {
+    .footer-content {
+      flex-direction: column; /* Stack content on smaller screens */
+      align-items: center; /* Center align columns */
+      text-align: center; /* Center text */
+    }
+  
+    .footer-links {
+      flex-wrap: wrap; /* Wrap columns */
+      justify-content: center; /* Center the columns */
+    }
+  
+    .column {
+      flex: 1 1 100%; /* Make each column full-width */
+      margin-bottom: 20px; /* Space between stacked columns */
+    }
+  }
+  
+
+  /* feature styling  */
+  .features-section {
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 1200px;
+    margin: 20px auto;
+    margin-top: 6em;
+    /* margin-right: 20px; */
+    padding: 40px;
+    background-color: #ccc;
+  }
+  
+  .features-header {
+    color: black;
+    margin-bottom: 40px;
+  }
+  
+  .features-header h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 16px;
+  }
+  
+  .features-header p {
+    font-size: 1.2rem;
+    color: black;
+    line-height: 1.6;
+  }
+  
+  .features-cards {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .feature-card {
+    flex: 1 1 calc(25% - 20px);
+    background-color: rgba(20, 24, 37, 0.85); /*Semi-transparent navy blue*/
+    text-align: center;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Strong shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    color: white;
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7); /* Elevated shadow */
+  }
+  
+  .feature-card img {
+    width: 80px;
+    margin-bottom: 16px;
+  }
+  
+  .feature-card h4 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #4FC3F7; /* Neon blue for headers */
+  }
+  
+  .feature-card p {
+    font-size: 0.9rem;
+    color: #ddd; /* Subtle gray for descriptions */
+    line-height: 1.6;
+  }
+  
+  .explore-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #00FFAB; /* Neon green */
+    color: #001f3f;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .explore-button:hover {
+    background-color: #00D494; /* Darker green on hover */
+    transform: scale(1.05);
+  }
+  
+  .explore-button span {
+    margin-left: 8px;
+    font-size: 1.2rem;
+  }
+  </style>
   <body>
     <header>
       <nav class="navbar">
         <!-- Left Side: Logo -->
         <div class="logo">
-          <h1 style="color: aliceblue;">FinLink</h1>
+          <h1 style="color: aliceblue">FinLink</h1>
         </div>
 
         <!-- Middle: Navbar Options -->
@@ -56,7 +462,11 @@
           the next level. With our platform, you’ll gain access to personalized
           strategies and actionable insights tailored to your unique goals
         </p>
-       <a href="/financialland"><button class="explore-button">Explore More <span>→</span></button></a> 
+        <a href="/financialland"
+          ><button class="explore-button">
+            Explore More <span>→</span>
+          </button></a
+        >
       </div>
       <div class="features-cards">
         <div class="feature-card">
@@ -66,7 +476,9 @@
             manage your money better, plan your investments wisely, and achieve
             your financial goals.
           </p>
-          <a href="/financialland"><button class="explore-button">Get Financial Help</button></a> 
+          <a href="/financialland"
+            ><button class="explore-button">Get Financial Help</button></a
+          >
         </div>
         <div class="feature-card">
           <h4>"Connect. Collaborate. Fulfill Each Others Needs.</h4>
@@ -74,7 +486,9 @@
             A unique community-driven platform where users from diverse
             backgrounds can exchange services or resources
           </p>
-          <a href="/barter"><button class="explore-button">Explore Barter System</button></a> 
+          <a href="/barter"
+            ><button class="explore-button">Explore Barter System</button></a
+          >
         </div>
         <div class="feature-card">
           <h4>Track Your Financial Progress and Achieve Your Goals</h4>
@@ -84,7 +498,9 @@
             milestones, and analyze trends to ensure youre always moving towards
             your goals
           </p>
-          <a href="/profile"><button class="explore-button">See My Profile</button></a> 
+          <a href="/profile"
+            ><button class="explore-button">See My Profile</button></a
+          >
         </div>
       </div>
     </section>
@@ -133,32 +549,5 @@
     crossorigin="anonymous"
     referrerpolicy="no-referrer"
   ></script>
-  <script>
-    const hamburgerMenu = document.getElementById("hamburger-menu");
-    const navLinks = document.querySelector(".nav-links");
-    var sender_id = '<%= userId %>'; // Ensure userId is correctly passed from the server-rendered view
-var socket = io("/user-namespace", {
-  auth: {
-    token: sender_id, // Pass the correct userId
-  },
-});
-
-    hamburgerMenu.addEventListener("click", () => {
-      navLinks.classList.toggle("active");
-    });
-
-    let lastScrollY = window.scrollY;
-    const navbar = document.querySelector(".navbar");
-
-    window.addEventListener("scroll", () => {
-      if (window.scrollY > lastScrollY) {
-        // Scrolling down, hide navbar
-        navbar.classList.add("hidden");
-      } else {
-        // Scrolling up, show navbar
-        navbar.classList.remove("hidden");
-      }
-      lastScrollY = window.scrollY;
-    });
-  </script>
+  <script></script>
 </html>
