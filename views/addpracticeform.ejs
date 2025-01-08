@@ -7,44 +7,98 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f8f8f8;
-            padding: 40px;
+            background-color: #121212;
+            color: #e0e0e0;
+            
             margin: 0;
             box-sizing: border-box;
         }
 
+        /* Navbar styles */
+        nav {
+            background-color: #1e1e1e;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Logo section (left side) */
+        .logo {
+            font-size: 1.5em;
+            color: #e0e0e0;
+            font-weight: bold;
+        }
+
+        /* Centered buttons section */
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            flex-grow: 1;
+        }
+
+        .nav-buttons a {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-size: 1.1em;
+            margin: 0 20px;
+            transition: color 0.3s;
+        }
+
+        .nav-buttons a:hover {
+            color: #4CAF50;
+        }
+
+        /* Logout button (right side) */
+        .logout {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-size: 1.1em;
+        }
+
+        .logout a:hover {
+            color: #4CAF50;
+        }
+        .logout a {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-size: 1.1em;
+        }
+
+
         h1 {
-            font-size: 2em;
-            color: #333;
+            font-size: 2.5em;
+            color: #fff;
             text-align: center;
             margin-bottom: 30px;
         }
 
         form {
-            background-color: #fff;
+            background-color: #1e1e1e;
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             max-width: 600px;
             margin: auto;
         }
 
         label {
             display: block;
-            font-size: 1.1em;
+            font-size: 1.2em;
             font-weight: bold;
-            color: #444;
+            color: #ccc;
             margin-bottom: 8px;
         }
 
         input[type="text"], input[type="number"], textarea, input[type="file"], select {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             margin-bottom: 20px;
-            border: 1px solid #ccc;
+            border: 1px solid #444;
             border-radius: 8px;
             font-size: 1em;
-            box-sizing: border-box;
+            background-color: #333;
+            color: #fff;
         }
 
         select:focus, input[type="text"]:focus, input[type="number"]:focus, textarea:focus, input[type="file"]:focus {
@@ -55,7 +109,7 @@
         input[type="submit"] {
             background-color: #4CAF50;
             color: white;
-            padding: 14px 30px;
+            padding: 16px 30px;
             border: none;
             border-radius: 8px;
             font-size: 1.1em;
@@ -72,7 +126,7 @@
             text-align: center;
             margin-top: 20px;
             font-size: 0.9em;
-            color: #777;
+            color: #bbb;
         }
 
         .form-footer a {
@@ -97,11 +151,41 @@
 
         .points-display {
             font-weight: bold;
-            color: #333;
+            color: #fff;
+        }
+
+        /* Dark theme input focus */
+        input[type="file"]:focus {
+            border-color: #4CAF50;
+        }
+
+        select {
+            background-color: #333;
+            color: #fff;
+        }
+
+        select option {
+            background-color: #333;
+            color: #fff;
         }
     </style>
 </head>
 <body>
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">EcoTrack</div>
+
+        <div class="nav-buttons">
+            <a href="/home">Home</a>
+            <a href="/tax">Avail Tax</a>
+            <a href="/profile">Profile</a>
+        </div>
+
+        <div class="logout">
+            <a href="/logout">Logout</a>
+        </div>
+    </nav>
+
     <h1>Submit Your Sustainable Practice</h1>
     <form action="/practices" method="POST" enctype="multipart/form-data">
         <label for="practice">Sustainable Practice</label>
@@ -155,7 +239,5 @@
             }
         }
     </script>
-    
-    
 </body>
 </html>

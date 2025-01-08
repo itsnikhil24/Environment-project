@@ -172,7 +172,6 @@
     }
     .profile-section a :hover{
       color: #9b59b6;
-
     }
   </style>
 </head>
@@ -217,47 +216,161 @@
         </tr>
       </thead>
       <tbody id="leaderboard">
-        <!-- Rows will be dynamically added here using JavaScript -->
+        <!-- Static Rows for leaderboard -->
+        <tr>
+          <td class="serial-number">1</td>
+          <td>GreenTech</td>
+          <td>250</td>
+          <td class="trophy">🏆</td>
+        </tr>
+        <tr>
+          <td class="serial-number">2</td>
+          <td>EcoPure</td>
+          <td>180</td>
+          <td class="trophy">🥈</td>
+        </tr>
+        <tr>
+          <td class="serial-number">3</td>
+          <td>CleanEarth</td>
+          <td>150</td>
+          <td class="trophy">🥈</td>
+        </tr>
+        <tr>
+          <td class="serial-number">4</td>
+          <td>SolarPower</td>
+          <td>130</td>
+          <td class="trophy">🥈</td>
+        </tr>
+        <tr>
+          <td class="serial-number">5</td>
+          <td>EcoFactory</td>
+          <td>120</td>
+          <td class="trophy">🥈</td>
+        </tr>
+        <tr>
+          <td class="serial-number">6</td>
+          <td>WasteNot</td>
+          <td>110</td>
+          <td class="trophy">🥈</td>
+        </tr>
+        <tr>
+          <td class="serial-number">7</td>
+          <td>GreenWorld</td>
+          <td>100</td>
+          <td class="trophy">🥈</td>
+        </tr>
+        <tr>
+          <td class="serial-number">8</td>
+          <td>EcoMind</td>
+          <td>90</td>
+          <td class="trophy">🥉</td>
+        </tr>
+        <tr>
+          <td class="serial-number">9</td>
+          <td>Regreen</td>
+          <td>85</td>
+          <td class="trophy">🥉</td>
+        </tr>
+        <tr>
+          <td class="serial-number">10</td>
+          <td>GreenLeaf</td>
+          <td>80</td>
+          <td class="trophy">🥉</td>
+        </tr>
+        <tr>
+          <td class="serial-number">11</td>
+          <td>EarthFirst</td>
+          <td>75</td>
+          <td class="trophy">🥉</td>
+        </tr>
+        <tr>
+          <td class="serial-number">12</td>
+          <td>EcoSystems</td>
+          <td>70</td>
+          <td class="trophy">🥉</td>
+        </tr>
+        <tr>
+          <td class="serial-number">13</td>
+          <td>GreenEnergy</td>
+          <td>65</td>
+          <td class="trophy">🥉</td>
+        </tr>
+        <tr>
+          <td class="serial-number">14</td>
+          <td>CleanTech</td>
+          <td>60</td>
+          <td class="trophy">🥉</td>
+        </tr>
+        <tr>
+          <td class="serial-number">15</td>
+          <td>EcoForce</td>
+          <td>55</td>
+          <td class="trophy">🥉</td>
+        </tr>
+        <tr>
+          <td class="serial-number">16</td>
+          <td>GreenFuture</td>
+          <td>50</td>
+          <td class="trophy">🥉</td>
+        </tr>
+        <tr>
+          <td class="serial-number">17</td>
+          <td>GreenRise</td>
+          <td>45</td>
+          <td class="trophy">🔰</td>
+        </tr>
+        <tr>
+          <td class="serial-number">18</td>
+          <td>EcoMinds</td>
+          <td>40</td>
+          <td class="trophy">🔰</td>
+        </tr>
+        <tr>
+          <td class="serial-number">19</td>
+          <td>GreenMoves</td>
+          <td>35</td>
+          <td class="trophy">🔰</td>
+        </tr>
+        <tr>
+          <td class="serial-number">20</td>
+          <td>FreshEarth</td>
+          <td>30</td>
+          <td class="trophy">🔰</td>
+        </tr>
       </tbody>
     </table>
   </div>
 
   <script>
-    // Fetch leaderboard data and populate the table
-    async function fetchLeaderboard() {
-      try {
-        const response = await fetch('/api/leaderboard'); // Adjust the endpoint
-        const data = await response.json();
-
-        const leaderboardContainer = document.getElementById('leaderboard');
-        leaderboardContainer.innerHTML = '';
-
-        data.forEach((factory, index) => {
-          const points = factory.Points || 0; // Default to 0 if points are undefined
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td class="serial-number">${index + 1}</td>
-            <td>${factory.name}</td>
-            <td>${points}</td>
-            <td class="trophy">${getTrophyIcon(points)}</td>
-          `;
-          leaderboardContainer.appendChild(row);
-        });
-      } catch (err) {
-        console.error('Error fetching leaderboard:', err);
-      }
-    }
-
     // Trophy icons based on points
     const getTrophyIcon = (points) => {
-      if (points >= 200) return '<span class="trophy-icon">🏆</span>'; // Gold Trophy
-      if (points >= 100) return '<span class="trophy-icon">🥈</span>'; // Silver Trophy
-      if (points >= 50) return '<span class="trophy-icon">🥉</span>'; // Bronze Trophy
-      return '<span class="trophy-icon">🔰</span>'; // Participation Trophy
+      if (points >= 200) return '<span class="trophy-icon">🏆</span>';
+      if (points >= 150) return '<span class="trophy-icon">🥈</span>';
+      if (points >= 100) return '<span class="trophy-icon">🥉</span>';
+      return '<span class="trophy-icon">🔰</span>';
     };
 
-    // Fetch leaderboard data on page load
-    window.onload = fetchLeaderboard;
+    // Populate leaderboard dynamically if needed
+    const leaderboard = [
+      { name: 'GreenTech', points: 250 },
+      { name: 'EcoPure', points: 180 },
+      { name: 'CleanEarth', points: 150 },
+      { name: 'SolarPower', points: 130 },
+      { name: 'EcoFactory', points: 120 },
+      // Add more entries as needed
+    ];
+
+    const leaderboardTable = document.getElementById('leaderboard');
+    leaderboard.forEach((entry, index) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="serial-number">${index + 1}</td>
+        <td>${entry.name}</td>
+        <td>${entry.points}</td>
+        <td class="trophy">${getTrophyIcon(entry.points)}</td>
+      `;
+      leaderboardTable.appendChild(row);
+    });
   </script>
 </body>
 </html>
