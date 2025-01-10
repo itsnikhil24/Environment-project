@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NGO Search Portal</title>
+    <style>
+        /* Main Styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #003366;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .navbar h1 {
+            margin: 0;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-right input {
+            padding: 0.5rem;
+            margin-right: 1rem;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .navbar-right button {
+            background-color: #FF5733;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            padding: 1rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 25%;
+            background-color: #f9f9f9;
+            padding: 1rem;
+            border-right: 1px solid #ddd;
+        }
+
+        .sidebar h3 {
+            margin-top: 0;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 0.5rem 0;
+        }
+
+        /* NGO Container */
+        .ngo-container {
+            width: 75%;
+            padding: 1rem;
+        }
+
+        .ngo-container h2 {
+            margin-top: 0;
+        }
+
+        .ngo-card {
+            background-color: white;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .ngo-card h3 {
+            margin: 0 0 0.5rem 0;
+            color: #003366;
+        }
+
+        .ratings {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+
+        .ratings span {
+            color: gold;
+        }
+
+        .ratings button {
+            background-color: #FF5733;
+            color: white;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <h1>TaxVantage</h1>
+        </div>
+        <div class="navbar-right">
+            <input id="searchBar" type="text" placeholder="Search NGOs..." oninput="filterNGOs()" />
+            <button>Logout</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h3>Services Related to</h3>
+            <ul>
+                <li>Education and Learning</li>
+                <li>Health and Wellness</li>
+                <li>Electricity, Water, and Local Services</li>
+                <li>Money and Taxes</li>
+                <li>Jobs</li>
+                <li>Justice, Law, and Grievances</li>
+                <li>Travel and Tourism</li>
+                <li>Business and Self-Employed</li>
+            </ul>
+        </div>
+
+        <!-- NGO Container -->
+        <div class="ngo-container" id="ngoContainer">
+            <h2>Search NGOs</h2>
+            <!-- NGO Cards -->
+        </div>
+    </div>
+
+    <script>
+        // List of NGOs
+        const ngos = [
+            { name: "Helping Hands Foundation", description: "Providing education and health services.", contact: "+123 456 7890", status: "Fully Online", rating: "★★★★★" },
+            { name: "Green Earth Initiative", description: "Focused on flood relief and sustainability.", contact: "+987 654 3210", status: "Fully Online", rating: "★★★★☆" },
+            { name: "EcoSave", description: "Promoting eco-friendly technologies.", contact: "+456 789 1234", status: "Offline", rating: "★★★★☆" },
+            { name: "Care for All", description: "Dedicated to child welfare.", contact: "+654 321 0987", status: "Fully Online", rating: "★★★★☆" },
+            { name: "Food for Future", description: "Reducing food wastage.", contact: "+321 654 9870", status: "Fully Online", rating: "★★★★★" },
+            { name: "Village Aid Society", description: "Helping rural communities.", contact: "+789 123 4560", status: "Partially Online", rating: "★★★★☆" },
+            { name: "Clean Rivers Project", description: "Restoring waterways.", contact: "+987 456 3210", status: "Fully Online", rating: "★★★★★" },
+            { name: "Farm Aid", description: "Supporting small-scale farmers.", contact: "+654 987 1234", status: "Offline", rating: "★★★★☆" },
+            { name: "Urban Green", description: "Promoting green city development.", contact: "+123 789 6540", status: "Fully Online", rating: "★★★★☆" },
+            { name: "Health First", description: "Providing free healthcare.", contact: "+321 456 9870", status: "Fully Online", rating: "★★★★★" },
+            { name: "WaterAid", description: "Improving access to clean water.", contact: "+456 987 3210", status: "Fully Online", rating: "★★★★☆" },
+            { name: "Women Empowerment League", description: "Supporting women entrepreneurs.", contact: "+789 654 1230", status: "Fully Online", rating: "★★★★★" },
+            { name: "Youth Connect", description: "Empowering the youth.", contact: "+321 789 4560", status: "Offline", rating: "★★★★☆" },
+            { name: "Disaster Relief Corps", description: "Providing disaster relief.", contact: "+987 321 6540", status: "Fully Online", rating: "★★★★★" },
+            { name: "Solar Future", description: "Promoting solar energy.", contact: "+654 123 7890", status: "Partially Online", rating: "★★★★☆" }
+        ];
+
+        // Render NGOs
+        const ngoContainer = document.getElementById("ngoContainer");
+        const renderNGOs = (filteredNGOs) => {
+            ngoContainer.innerHTML = "<h2>Search NGOs</h2>";
+            filteredNGOs.forEach(ngo => {
+                const ngoCard = `
+                    <div class="ngo-card">
+                        <h3>${ngo.name}</h3>
+                        <p>${ngo.description}</p>
+                        <p><strong>Contact:</strong> ${ngo.contact}</p>
+                        <p><strong>Status:</strong> ${ngo.status}</p>
+                        <div class="ratings">
+                            <span>${ngo.rating}</span>
+                            <a><button>Contact</button></a>
+                        </div>
+                    </div>
+                `;
+                ngoContainer.innerHTML += ngoCard;
+            });
+        };
+
+        // Filter NGOs based on search input
+        const filterNGOs = () => {
+            const searchValue = document.getElementById("searchBar").value.toLowerCase();
+            const filteredNGOs = ngos.filter(ngo => ngo.name.toLowerCase().includes(searchValue));
+            renderNGOs(filteredNGOs);
+        };
+
+        // Initial render
+        renderNGOs(ngos);
+    </script>
+</body>
+</html>

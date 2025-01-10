@@ -1,21 +1,30 @@
 const express = require("express");
-const router = express.Router();
-const usercontroller = require("../controllers/usercontrollers");
 const multer = require("multer");
+const userController = require("../controllers/usercontrollers");
 
+const router = express.Router();
+const upload = multer({ storage: multer.memoryStorage() });
 
-const upload = multer({ storage: multer.memoryStorage() }); // Move upload middleware here
+// Authentication routes
+router.get("/login", userController.loginPage);
+router.get("/", userController.registerPage);
+router.post("/register", upload.single("profile_pic"), userController.createUser);
+router.post("/login", userController.login);
 
+// Practices routes
+router.post("/practices", upload.single("proofFile"), userController.addPractice);
+router.get("/practices", userController.addPracticeForm);
 
-router.get("/login", usercontroller.loginpage);
-router.get("/", usercontroller.registerpage);
-router.post("/register", upload.single("profile_pic"), usercontroller.createUser); // Use multer middleware
-router.post("/login", usercontroller.login); // Use multer middleware
-router.post('/practices',  upload.single('proofFile'), usercontroller.addPractice);
-router.get('/practices',  usercontroller.addPracticeform);
-router.get('/api/leaderboard',  usercontroller.leaderboard);
-router.get('/leaderboard',  usercontroller.leaderboardpage);
-router.get('/home',  usercontroller.home);
+// Leaderboard routes
+router.get("/api/leaderboard", userController.leaderboard);
+router.get("/leaderboard", userController.leaderboardPage);
 
+// Static pages
+router.get("/home", userController.home);
+router.get("/ngo", userController.ngoPage);
+router.get("/tax", userController.renderTaxPage);
 
-module.exports = router; // Ensure this exports the router
+// Apply for tax benefits
+router.post("/apply-tax", userController.applyTax);
+
+module.exports = router;

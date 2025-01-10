@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tax Benefits</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    h1, h2, p {
+      text-align: center;
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 20px 0;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tax Benefits</h1>
+    <h2>Welcome, <%= username %>!</h2>
+    <p><strong>Current Points:</strong> <%= points %></p>
+    <p><strong>Eligible Tier:</strong> <%= tier %></p>
+    <p><strong>Tax Benefit:</strong> <%= taxBenefit %></p>
+    <p><strong>Cost to Apply:</strong> <%= cost %> Points</p>
+
+    <% if (cost && points >= cost) { %>
+      <form action="/apply-tax" method="POST">
+        <input type="hidden" name="username" value="<%= username %>">
+        <button type="submit">Apply for Tax Benefits</button>
+      </form>
+    <% } else { %>
+      <p style="color: red; text-align: center;">You do not have enough points to claim benefits.</p>
+    <% } %>
+  </div>
+</body>
+</html>

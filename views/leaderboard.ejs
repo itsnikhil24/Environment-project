@@ -342,6 +342,23 @@
   </div>
 
   <script>
+ const searchInput = document.querySelector('.search-bar input');
+  const leaderboardRows = document.querySelectorAll('#leaderboard tr');
+
+  // Event listener for input in the search bar
+  searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase().trim();
+
+    leaderboardRows.forEach((row) => {
+      const factoryName = row.children[1]?.textContent.toLowerCase(); // Get the factory name column text
+      if (factoryName && factoryName.includes(query)) {
+        row.style.display = ''; // Show row
+      } else {
+        row.style.display = 'none'; // Hide row
+      }
+    });
+  });
+
     // Trophy icons based on points
     const getTrophyIcon = (points) => {
       if (points >= 200) return '<span class="trophy-icon">🏆</span>';
