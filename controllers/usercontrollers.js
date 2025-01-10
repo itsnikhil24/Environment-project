@@ -245,7 +245,7 @@ exports.login = async (req, res) => {
         const token = jwt.sign({ username: userfind.username, id: userfind._id }, "secretKey", { expiresIn: "1h" });
 
         res.cookie("token", token, { httpOnly: true, secure: true, maxAge: 3600000 });
-        return res.status(200).redirect("/practices");
+        return res.status(200).redirect("/home");
     } catch (error) {
         console.error("Error during login:", error);
         return res.status(500).send("An internal error occurred");
@@ -344,5 +344,46 @@ exports.applyTax = async (req, res) => {
         res.redirect(`/tax?username=${username}`);
     } catch (error) {
         res.status(500).render("error", { message: "An error occurred while applying tax benefits" });
+    }
+};
+
+exports.profile = async (req, res) => {
+    try {
+        // Get the token from the cookie
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).send({ message: 'Not authenticated' });
+        }
+
+        // Verify the JWT token and extract the username
+        const decoded = jwt.verify(token, 'secretKey');
+        const username = decoded.username;
+
+        if (!username) {
+            return res.status(400).send('No username found in the token.');
+        }
+
+        // Fetch user details using the username
+        const userDetails = await user.findOne({ username }).populate('practices');
+
+        if (!userDetails) {
+            return res.status(404).send('User not found.');
+        }
+
+        // Fetch all practices submitted by the user
+        const practices = await Practice.find({ factory: userDetails._id });
+
+        // Fetch tax claims submitted by the user
+        const taxClaims = await Tax.find({ user: userDetails._id });
+
+        // Render the profile page with the fetched data
+        res.render('profile', {
+            user: userDetails, // Pass user details to the view
+            practices,         // Pass user's practices to the view
+            taxClaims          // Pass user's tax claims to the view
+        });
+    } catch (error) {
+        console.error('Error fetching profile data:', error);
+        res.status(500).send('Internal Server Error');
     }
 };

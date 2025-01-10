@@ -23,6 +23,7 @@ router.get("/leaderboard", userController.leaderboardPage);
 router.get("/home", userController.home);
 router.get("/ngo", userController.ngoPage);
 router.get("/tax", userController.renderTaxPage);
+router.get("/profile", userController.profile);
 
 // Apply for tax benefits
 router.post("/apply-tax", userController.applyTax);
