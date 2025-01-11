@@ -8,53 +8,190 @@
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 20px;
-      background-color: #f4f4f4;
+      padding: 0;
+      background-color: #121212;
+      color: #fff;
     }
+
+    /* Navbar */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #1e1e1e;
+      padding: 1em;
+      color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    nav h1 {
+      margin: 0;
+      font-size: 1.8em;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 1em;
+      font-size: 1.1em;
+    }
+
+    nav a:hover {
+      color: #4CAF50;
+    }
+
+    /* Main container */
     .container {
-      max-width: 600px;
+      width: 90%;
       margin: auto;
-      background: white;
-      padding: 20px;
+      padding: 2em;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #333;
+      color: #fff;
+      padding: 1em;
       border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
-    h1, h2, p {
-      text-align: center;
+
+    header h1 {
+      margin: 0;
     }
+
+    header .user-info h3 {
+      margin: 0;
+      font-size: 1em;
+    }
+
+    main {
+      display: flex;
+      justify-content: space-between;
+      gap: 2em;
+      margin-top: 1.5em;
+    }
+
+    section {
+      flex: 1;
+      background-color: #2d2d2d;
+      border-radius: 8px;
+      padding: 1.5em;
+      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+      border-bottom: 2px solid #4CAF50;
+      padding-bottom: 0.5em;
+      margin-bottom: 1em;
+    }
+
+    .card {
+      padding: 1em;
+      margin-bottom: 1em;
+      border: 1px solid #444;
+      border-radius: 8px;
+      background-color: #383838;
+    }
+
+    .card h3, .card p {
+      margin: 0.5em 0;
+    }
+
     button {
-      display: block;
-      width: 100%;
-      padding: 10px;
-      margin: 20px 0;
-      background-color: #28a745;
-      color: white;
+      background-color: #4CAF50;
+      color: #fff;
       border: none;
-      border-radius: 4px;
+      padding: 0.7em 1.2em;
+      border-radius: 5px;
       cursor: pointer;
     }
+
     button:hover {
-      background-color: #218838;
+      background-color: #45a049;
+    }
+
+    .no-data {
+      color: #888;
+      text-align: center;
+      font-style: italic;
+    }
+
+    /* Right section styling */
+    .right .summary {
+      margin-top: 1em;
+      padding: 1em;
+      background-color: #444;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Tax Benefits</h1>
-    <h2>Welcome, <%= username %>!</h2>
-    <p><strong>Current Points:</strong> <%= points %></p>
-    <p><strong>Eligible Tier:</strong> <%= tier %></p>
-    <p><strong>Tax Benefit:</strong> <%= taxBenefit %></p>
-    <p><strong>Cost to Apply:</strong> <%= cost %> Points</p>
+  <!-- Navbar -->
+  <nav>
+    <h1>EcoTax Benefits</h1>
+    <div>
+      <a href="/home">Home</a>
+      <a href="/profile">Profile</a>
+      <a href="/logout">Logout</a>
+    </div>
+  </nav>
 
-    <% if (cost && points >= cost) { %>
-      <form action="/apply-tax" method="POST">
-        <input type="hidden" name="username" value="<%= username %>">
-        <button type="submit">Apply for Tax Benefits</button>
-      </form>
-    <% } else { %>
-      <p style="color: red; text-align: center;">You do not have enough points to claim benefits.</p>
-    <% } %>
+  <!-- Main content -->
+  <div class="container">
+    <header>
+      <h1>Eco-Friendly Tax Benefits</h1>
+      <div class="user-info">
+        <h3>Username: <%= user.username %></h3>
+        <h3>Points: <%= user.Points %></h3>
+      </div>
+    </header>
+
+    <main>
+      <!-- Eligible Tax Benefits Section -->
+      <section class="left">
+        <h2>Eligible Tax Benefits</h2>
+        <% if (eligibleTier) { %>
+          <div class="card">
+            <h3>Tier: <%= eligibleTier.tier %></h3>
+            <p>Tax Reduction: <%= eligibleTier.taxBenefit %></p>
+            <p>Cost: <%= eligibleTier.cost %> Points</p>
+            <form action="/apply-tax" method="POST">
+              <input type="hidden" name="username" value="<%= user.username %>">
+              <button type="submit">Claim Now</button>
+            </form>
+          </div>
+        <% } else { %>
+          <p class="no-data">You do not have enough points to claim benefits.</p>
+        <% } %>
+      </section>
+
+      <!-- Previously Claimed Taxes Section -->
+      <section class="middle">
+        <h2>Previously Claimed Taxes</h2>
+        <% if (previousTaxes.length > 0) { %>
+          <% previousTaxes.forEach(tax => { %>
+            <div class="card">
+              <h3>Tier: <%= tax.taxType %></h3>
+              <p>Tax Benefit: <%= tax.taxBenefit %></p>
+              <p>Points Deducted: <%= tax.pointsDeducted %></p>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p class="no-data">No taxes claimed yet.</p>
+        <% } %>
+      </section>
+
+      <!-- Your Savings Section -->
+      <section class="right">
+        <h2>Your Savings</h2>
+        <p>Total Saved: $<%= totalSavings.toFixed(2) %></p>
+        <div class="summary">
+          <p>Thank you for practicing environmentally friendly habits!</p>
+        </div>
+      </section>
+    </main>
   </div>
 </body>
 </html>

@@ -19,7 +19,11 @@ const userschema = mongoose.Schema({
         }
     ],
 
-    Points:{type:Number},
+    Points: {
+        type: Number,
+        required: true,
+        default: 0, // Ensure default value
+    },
     practices: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Practice' }]
 }); // Automatically adds createdAt and updatedAt fields
 

@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <style>
- /* Base Reset */
+/* Base Reset */
 * {
   margin: 0;
   padding: 0;
@@ -152,7 +152,7 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: background-color 0.3s;
   display: flex;
-  justify-content: space-between;
+  justify-content:space-between; /* Ensures space between content and status */
   align-items: center;
 }
 
@@ -165,14 +165,19 @@ body {
   color: #f1f1f1; /* Light text for project titles */
 }
 
+.projects ul li .claim-date {
+  color: #bbb; /* Light color for claim date */
+}
+
 .status {
   font-weight: bold;
   padding: 5px 10px;
   border-radius: 5px;
   font-size: 0.9em;
   text-transform: uppercase;
-  margin-left: 15px;
   text-align: center;
+  margin-left: 15px;
+  margin-right: 0; /* Ensure status is aligned to the right */
 }
 
 .status.pending {
@@ -211,82 +216,68 @@ body {
   }
 }
 
-  /* Base Reset */
-  * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+/* Navbar Styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  padding: 15px 30px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
 
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #2c2c2c;
-      color: #e0e0e0;
-    }
+.navbar a {
+  text-decoration: none;
+  color: #fff;
+}
 
-    /* Navbar Styles */
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #333;
-      padding: 15px 30px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    }
+.home {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #007bff;
+}
 
-    .navbar a {
-      text-decoration: none;
-      color: #fff;
-    }
+.search-bar input {
+  padding: 8px;
+  font-size: 1em;
+  width: 250px;
+  border: none;
+  border-radius: 5px;
+  background-color: #444;
+  color: #fff;
+}
 
-    .home {
-      font-size: 1.5em;
-      font-weight: bold;
-      color: #007bff;
-    }
+.search-bar input::placeholder {
+  color: #bbb;
+}
 
-    .search-bar input {
-      padding: 8px;
-      font-size: 1em;
-      width: 250px;
-      border: none;
-      border-radius: 5px;
-      background-color: #444;
-      color: #fff;
-    }
+.profile-section {
+  display: flex;
+  align-items: center;
+}
 
-    .search-bar input::placeholder {
-      color: #bbb;
-    }
+.profile-section a {
+  color: #fff;
+  font-size: 1em;
+  margin-right: 10px;
+}
 
-    .profile-section {
-      display: flex;
-      align-items: center;
-    }
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+}
 
-    .profile-section a {
-      color: #fff;
-      font-size: 1em;
-      margin-right: 10px;
-    }
+.profile-section a:hover {
+  text-decoration: underline;
+}
 
-    .profile-pic {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #fff;
-    }
-
-    .profile-section a:hover {
-      text-decoration: underline;
-    }
-
-    /* Hover effect */
-    .home:hover {
-      color: #64b5f6;
-    }
-
+/* Hover effect */
+.home:hover {
+  color: #64b5f6;
+}
 
 
 </style>
@@ -334,45 +325,27 @@ body {
         <h3>Factory Name : <span><%= user.name %></span></h3>
         <h3>Username : <span><%= user.username %></span></h3>
         <h3>Phone : <span><%= user.phone_number || 'N/A' %></span></h3>
-        <h3>Points : <span><%= user.points || 0 %></span></h3>
+        <h3>Location : <span><%= user.location || '200 Industrial Park, Detroit, MI, USA' %></span></h3>
+        <!-- <h3>Industry Type : <span><%= user.industry_type || 'N/A' %></span></h3> -->
+        <h3>Tax Benefits Claimed: <span><%= taxClaims.length %></span></h3>
       </div>
 
+      <!-- Projects -->
       <div class="projects">
         <h1>Practices</h1>
         <ul>
-          <% if (practices.length > 0) { %>
-            <% practices.forEach(practice => { %>
-              <li>
-                <strong><%= practice.practice %></strong> -
-                <%= practice.description %> (<%= practice.points %> points)
-                <span class="status <%= practice.status.toLowerCase() %>">
-                  <%= practice.status %>
-                </span>
-              </li>
-            <% }); %>
-          <% } else { %>
-            <li>No practices submitted yet.</li>
-          <% } %>
+          <% practices.forEach(practice => { %>
+            <li>
+              <strong><%= practice.description %></strong>
+              <span class="status <%= practice.status.toLowerCase() %>"><%= practice.status %></span>
+           
+            </li>
+          <% }) %>
         </ul>
-
-        <h1>Tax Claims</h1>
-        <ul>
-          <% if (taxClaims.length > 0) { %>
-            <% taxClaims.forEach(claim => { %>
-              <li>
-                <strong><%= claim.taxType %></strong> -
-                <%= claim.pointsDeducted %> points
-                <span class="status <%= claim.status.toLowerCase() %>">
-                  <%= claim.status %>
-                </span>
-              </li>
-            <% }); %>
-          <% } else { %>
-            <li>No tax claims submitted yet.</li>
-          <% } %>
-        </ul>
+        
       </div>
     </div>
   </div>
 </body>
+
 </html>

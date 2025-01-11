@@ -1,4 +1,4 @@
-const user = require('../models/usermodel'); // Adjust the path as necessary
+const user = require('../models/usermodel');
 const bcrypt = require('bcrypt');
 const cloudinary = require('cloudinary').v2;
 const jwt = require('jsonwebtoken');
@@ -23,30 +23,22 @@ exports.home = (req, res) => {
 };
 
 // Render the tax page
-exports.renderTaxPage = async (req, res) => {
+exports.taxPage = async (req, res) => {
     const token = req.cookies.token;
     if (!token) {
-        return res.status(401).send({ message: 'Not authenticated' });
+        return res.status(401).render("error", { message: "Not authenticated" });
     }
 
-    const decoded = jwt.verify(token, 'secretKey');
-    const username = decoded.username;
-
     try {
-        // Debugging logs
-        console.log("Username received:", username);
+        const decoded = jwt.verify(token, 'secretKey');
+        const username = decoded.username;
 
-        // Fetch the user by username
-        const userData = await user.findOne({ username });
+        const currentUser = await user.findOne({ username });
 
-        // Log the user fetched
-        console.log("User fetched from database:", userData);
-
-        if (!userData) {
+        if (!currentUser) {
             return res.status(404).render("error", { message: "User not found" });
         }
 
-        // Define tax tiers
         const tiers = [
             { tier: "Bronze", points: 0, taxBenefit: "10% Tax Reduction", cost: 50 },
             { tier: "Silver", points: 100, taxBenefit: "20% Tax Reduction", cost: 100 },
@@ -54,30 +46,23 @@ exports.renderTaxPage = async (req, res) => {
             { tier: "Platinum", points: 300, taxBenefit: "40% Tax Reduction", cost: 200 },
         ];
 
-        // Safely handle undefined Points
-        const userPoints = userData.Points || 0;
-        console.log("User points:", userPoints);
+        const eligibleTier = tiers.reverse().find(t => currentUser.Points >= t.points);
 
-        // Find the eligible tier
-        const eligibleTier = tiers.reverse().find(t => userPoints >= t.points);
-        console.log("Eligible tier:", eligibleTier);
+        const previousTaxes = await Tax.find({ user: currentUser._id });
 
-        // Render the EJS page with the user and eligibility details
+        const totalSavings = previousTaxes.reduce((acc, tax) => acc + (tax.previousAmount || 0), 0);
+
         res.render("taxpage", {
-            username: userData.username,
-            points: userPoints,
-            tier: eligibleTier?.tier || "None",
-            taxBenefit: eligibleTier?.taxBenefit || "No Benefits",
-            cost: eligibleTier?.cost || 0,
+            user: currentUser,
+            eligibleTier,
+            previousTaxes,
+            totalSavings,
         });
     } catch (error) {
-        console.error("Error in renderTaxPage:", error.message);
-        res.status(500).render("error", { message: "An error occurred while fetching tax benefits" });
+        console.error(error);
+        res.status(500).render("error", { message: "An error occurred" });
     }
 };
-
-
-
 
 exports.leaderboardPage = (req, res) => {
     const token = req.cookies.token;
@@ -88,24 +73,37 @@ exports.leaderboardPage = (req, res) => {
     const decoded = jwt.verify(token, 'secretKey');
     const factoryusername = decoded.username;
 
+    // Fetch the logged-in user's profile pic
     user.findOne({ username: factoryusername })
-        .then(user => {
-            if (!user) {
+        .then(loggedInUser => {
+            if (!loggedInUser) {
                 return res.status(404).send({ message: 'User not found' });
             }
 
-            const profilePic = user.profile_pic;
-            if (profilePic.length > 0) {
-                res.render("leaderboard.ejs", { profilePic: profilePic[0] });
-            } else {
-                res.render("leaderboard.ejs");
-            }
+            const profilePic = loggedInUser.profile_pic;
+            
+            // Fetch all users for the leaderboard
+            user.find()
+                .select('username name profile_pic Points') // Adjust the fields as needed
+                .sort({ Points: -1 }) // Sort by points in descending order
+                .then(factories => {
+                    // Send both the logged-in user's profile pic and the leaderboard data to the view
+                    res.render("leaderboard.ejs", {
+                        profilePic: profilePic[0] || '', // Handle empty profile pic
+                        factories: factories
+                    });
+                })
+                .catch(err => {
+                    console.error('Error fetching leaderboard data:', err);
+                    return res.status(500).send({ message: 'Error fetching leaderboard data' });
+                });
         })
         .catch(err => {
             console.error(err);
             return res.status(500).send({ message: 'Error fetching user data' });
         });
 };
+
 
 // Leaderboard API
 exports.leaderboard = async (req, res) => {
@@ -149,7 +147,9 @@ exports.addPractice = async (req, res) => {
 
         const { practice, description, points } = req.body;
 
-        if (!practice || !description || !points) {
+        console.log('Request Body:', req.body);
+
+        if (!practice || !description || points === undefined || points === null) {
             return res.status(400).send({ message: 'All fields are required' });
         }
 
@@ -175,18 +175,16 @@ exports.addPractice = async (req, res) => {
 
         const savedPractice = await newPractice.save();
 
-        const user = await user.findById(factoryId);
-        if (!user) {
+        const userObj = await user.findById(factoryId);
+        if (!userObj) {
             return res.status(404).send({ message: 'User not found' });
         }
 
-        user.practices.push(savedPractice._id);
-        await user.save();
+        userObj.practices.push(savedPractice._id);
+        userObj.Points += parsedPoints;
+        await userObj.save();
 
-        res.status(201).send({
-            message: 'Practice submitted successfully. Awaiting admin verification.',
-            practice: savedPractice,
-        });
+        res.redirect("/tax");
     } catch (err) {
         console.error('Error during practice submission:', err);
         res.status(500).send({ error: 'Internal server error' });
@@ -244,7 +242,8 @@ exports.login = async (req, res) => {
 
         const token = jwt.sign({ username: userfind.username, id: userfind._id }, "secretKey", { expiresIn: "1h" });
 
-        res.cookie("token", token, { httpOnly: true, secure: true, maxAge: 3600000 });
+        res.cookie("token", token, { httpOnly: true, secure: true });
+
         return res.status(200).redirect("/home");
     } catch (error) {
         console.error("Error during login:", error);
@@ -304,14 +303,12 @@ exports.applyTax = async (req, res) => {
     const { username } = req.body;
 
     try {
-        // Fetch the user by username
-        const user = await user.findOne({ username });
+        const factoryUser = await user.findOne({ username });
 
-        if (!user) {
+        if (!factoryUser) {
             return res.status(404).render("error", { message: "User not found" });
         }
 
-        // Define tax tiers
         const tiers = [
             { tier: "Bronze", points: 0, taxBenefit: "10% Tax Reduction", cost: 50 },
             { tier: "Silver", points: 100, taxBenefit: "20% Tax Reduction", cost: 100 },
@@ -319,71 +316,85 @@ exports.applyTax = async (req, res) => {
             { tier: "Platinum", points: 300, taxBenefit: "40% Tax Reduction", cost: 200 },
         ];
 
-        // Find the eligible tier
-        const eligibleTier = tiers.reverse().find(t => user.Points >= t.points);
+        const eligibleTier = tiers.find(t => factoryUser.Points >= t.points);
 
         if (!eligibleTier) {
             return res.status(400).render("error", { message: "Insufficient points to claim benefits" });
         }
 
-        // Deduct points
-        user.Points -= eligibleTier.cost;
-        await user.save();
+        factoryUser.Points -= eligibleTier.cost;
+        await factoryUser.save();
 
-        // Record the tax benefit
         const taxRecord = new Tax({
-            user: user._id,
-            tier: eligibleTier.tier,
-            taxBenefit: eligibleTier.taxBenefit,
+            user: factoryUser._id,
+            taxType: eligibleTier.tier,
             pointsDeducted: eligibleTier.cost,
+            taxBenefit: eligibleTier.taxBenefit,
+            previousAmount: eligibleTier.cost * 0.1,
         });
 
         await taxRecord.save();
 
-        // Redirect to the tax benefits page with updated details
-        res.redirect(`/tax?username=${username}`);
+        const updatedEligibleTier = tiers
+            .filter(t => factoryUser.Points >= t.points)
+            .pop();
+
+        res.redirect(`/tax?username=${username}&tier=${updatedEligibleTier.tier}&taxBenefit=${updatedEligibleTier.taxBenefit}`);
     } catch (error) {
-        res.status(500).render("error", { message: "An error occurred while applying tax benefits" });
+        console.error(error);
+        res.status(500).render("error", { message: "An error occurred while applying tax benefits." });
     }
 };
 
 exports.profile = async (req, res) => {
     try {
-        // Get the token from the cookie
         const token = req.cookies.token;
         if (!token) {
             return res.status(401).send({ message: 'Not authenticated' });
         }
 
-        // Verify the JWT token and extract the username
         const decoded = jwt.verify(token, 'secretKey');
         const username = decoded.username;
 
-        if (!username) {
-            return res.status(400).send('No username found in the token.');
-        }
-
-        // Fetch user details using the username
         const userDetails = await user.findOne({ username }).populate('practices');
 
         if (!userDetails) {
             return res.status(404).send('User not found.');
         }
 
-        // Fetch all practices submitted by the user
         const practices = await Practice.find({ factory: userDetails._id });
-
-        // Fetch tax claims submitted by the user
         const taxClaims = await Tax.find({ user: userDetails._id });
 
-        // Render the profile page with the fetched data
         res.render('profile', {
-            user: userDetails, // Pass user details to the view
-            practices,         // Pass user's practices to the view
-            taxClaims          // Pass user's tax claims to the view
+            user: userDetails,
+            practices,
+            taxClaims,
         });
     } catch (error) {
         console.error('Error fetching profile data:', error);
         res.status(500).send('Internal Server Error');
     }
 };
+
+exports.logout = (req, res) => {
+    res.clearCookie('token'); // Clear the JWT cookie
+    res.redirect('/login'); // Redirect to home page after logout
+};
+
+// isLoggedIn Middleware to check if the user is logged in
+// isLoggedIn Middleware to check if the user is logged in
+exports.isLoggedIn = (req, res, next) => {
+    const token = req.cookies.token;
+    if (!token) {
+        return res.redirect("/login"); // Redirect to login page if not authenticated
+    }
+
+    try {
+        const decoded = jwt.verify(token, 'secretKey');
+        req.user = decoded; // Store user info in the request object
+        next(); // Continue to the next middleware or route handler
+    } catch (error) {
+        return res.redirect("/login"); // Redirect to login page if token is invalid or expired
+    }
+};
+
