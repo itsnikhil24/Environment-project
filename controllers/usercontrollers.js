@@ -220,7 +220,7 @@ exports.createUser = async (req, res) => {
             profile_pic: profilePicUrl,
         });
 
-        res.status(201).send({ message: 'User created successfully', user: newUser });
+        res.redirect("/login");
     } catch (err) {
         console.error("Error during user creation:", err);
         res.status(500).send({ error: 'Internal server error' });
@@ -268,33 +268,45 @@ exports.upload = (fileBuffer) => {
     });
 };
 
+// Check Eligibility
 exports.checkEligibility = async (req, res) => {
     const { username } = req.body;
 
     try {
-        const user = await user.findOne({ username });
+        const factoryUser = await user.findOne({ username });
 
-        if (!user) {
+        if (!factoryUser) {
             return res.status(404).json({ error: "User not found" });
         }
 
+        // Define tiers
         const tiers = [
-            { tier: "Bronze", points: 0, taxBenefit: "10% Tax Reduction" },
+            { tier: "Bronze", points: 50, taxBenefit: "10% Tax Reduction" },
             { tier: "Silver", points: 100, taxBenefit: "20% Tax Reduction" },
             { tier: "Gold", points: 200, taxBenefit: "30% Tax Reduction" },
             { tier: "Platinum", points: 300, taxBenefit: "40% Tax Reduction" },
         ];
 
-        const eligibleTier = tiers.reverse().find(t => user.Points >= t.points);
+        // Find the highest eligible tier (user must have points > 50)
+        const eligibleTier = tiers.reverse().find(t => factoryUser.Points >= t.points);
+
+        if (!eligibleTier) {
+            return res.json({
+                userId: factoryUser._id,
+                points: factoryUser.Points,
+                tier: "Not eligible",
+                taxBenefit: "No tax benefit",
+            });
+        }
 
         res.json({
-            userId: user._id,
-            points: user.Points,
+            userId: factoryUser._id,
+            points: factoryUser.Points,
             tier: eligibleTier.tier,
             taxBenefit: eligibleTier.taxBenefit,
         });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "An error occurred while checking eligibility." });
     }
 };
 
@@ -309,42 +321,48 @@ exports.applyTax = async (req, res) => {
             return res.status(404).render("error", { message: "User not found" });
         }
 
+        // Define tiers
         const tiers = [
-            { tier: "Bronze", points: 0, taxBenefit: "10% Tax Reduction", cost: 50 },
+            { tier: "Bronze", points: 50, taxBenefit: "10% Tax Reduction", cost: 50 },
             { tier: "Silver", points: 100, taxBenefit: "20% Tax Reduction", cost: 100 },
             { tier: "Gold", points: 200, taxBenefit: "30% Tax Reduction", cost: 150 },
             { tier: "Platinum", points: 300, taxBenefit: "40% Tax Reduction", cost: 200 },
         ];
 
-        const eligibleTier = tiers.find(t => factoryUser.Points >= t.points);
+        // Find the highest eligible tier
+        const eligibleTier = tiers.reverse().find(t => factoryUser.Points >= t.points);
 
         if (!eligibleTier) {
-            return res.status(400).render("error", { message: "Insufficient points to claim benefits" });
+            return res.status(400).render("error", { message: "Insufficient points to claim benefits." });
         }
 
+        // Deduct points and save
         factoryUser.Points -= eligibleTier.cost;
         await factoryUser.save();
 
+        // Create a tax record
         const taxRecord = new Tax({
             user: factoryUser._id,
             taxType: eligibleTier.tier,
             pointsDeducted: eligibleTier.cost,
             taxBenefit: eligibleTier.taxBenefit,
-            previousAmount: eligibleTier.cost * 0.1,
+            previousAmount: eligibleTier.cost * 0.1, // Example calculation
         });
 
         await taxRecord.save();
 
+        // Update eligible tier after point deduction
         const updatedEligibleTier = tiers
             .filter(t => factoryUser.Points >= t.points)
             .pop();
 
-        res.redirect(`/tax?username=${username}&tier=${updatedEligibleTier.tier}&taxBenefit=${updatedEligibleTier.taxBenefit}`);
+        res.redirect(`/tax?username=${username}&tier=${updatedEligibleTier?.tier || "None"}&taxBenefit=${updatedEligibleTier?.taxBenefit || "No benefits"}`);
     } catch (error) {
         console.error(error);
         res.status(500).render("error", { message: "An error occurred while applying tax benefits." });
     }
 };
+
 
 exports.profile = async (req, res) => {
     try {
