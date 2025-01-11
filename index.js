@@ -29,6 +29,10 @@ cloudinary.config({
 
 // Middleware
 app.set("view engine", "ejs");
+
+// Explicitly set the views directory
+app.set("views", path.join(__dirname, "views")); // Make sure "views" folder is in the root
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
