@@ -48,5 +48,5 @@ We built the application using EJS for rendering dynamic HTML, CSS for styling, 
 
 ## ❗Challenges we ran into:
 
--  Uploading images to MongoDB: Configuring GridFS to handle and store images files effectively.
--  Deployment Issues: Deploying the application introduced complications with image uploads, which affected the functionality of the form submission on the marketplace page, preventing users from successfully listing their items.
+- **Data Integration:** Ensuring accurate tracking of factory efforts and smooth integration of the points system with the backend.
+- **Leaderboard Scalability:** Managing large datasets and ensuring real-time leaderboard updates without compromising performance.
