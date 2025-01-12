@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
+const path = require("path");
 
 require("dotenv").config();
 const upload = multer({ storage: multer.memoryStorage() }); // Memory storage for file uploads
