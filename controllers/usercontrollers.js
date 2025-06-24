@@ -4,6 +4,13 @@ const cloudinary = require('cloudinary').v2;
 const jwt = require('jsonwebtoken');
 const Practice = require('../models/Practice');
 const Tax = require('../models/taxmodel');
+const axios = require('axios');
+const Tesseract = require('tesseract.js');
+const ProofRegistry = require('../models/ProofRegistry');
+const path = require("path");
+const pdfParse = require("pdf-parse");
+const multer =require("multer")
+
 
 // Render pages
 exports.loginPage = (req, res) => {
@@ -21,6 +28,9 @@ exports.ngoPage = (req, res) => {
 exports.home = (req, res) => {
     res.render("home.ejs");
 };
+
+
+
 
 // Render the tax page
 exports.taxPage = async (req, res) => {
@@ -135,61 +145,125 @@ exports.addPracticeForm = (req, res) => {
 };
 
 // Add Practice
-exports.addPractice = async (req, res) => {
-    try {
-        const token = req.cookies.token;
-        if (!token) {
-            return res.status(401).send({ message: 'Not authenticated' });
-        }
-
-        const decoded = jwt.verify(token, 'secretKey');
-        const factoryId = decoded.id;
-
-        const { practice, description, points } = req.body;
-
-        console.log('Request Body:', req.body);
-
-        if (!practice || !description || points === undefined || points === null) {
-            return res.status(400).send({ message: 'All fields are required' });
-        }
-
-        const parsedPoints = Number(points);
-        if (isNaN(parsedPoints)) {
-            return res.status(400).send({ message: 'Points must be a valid number' });
-        }
-
-        if (!req.file) {
-            return res.status(400).send({ message: 'Proof file is required' });
-        }
-
-        const proofFileUrl = await exports.upload(req.file.buffer);
-
-        const newPractice = new Practice({
-            factory: factoryId,
-            practice,
-            description,
-            points: parsedPoints,
-            proofFile: proofFileUrl,
-            status: 'pending',
-        });
-
-        const savedPractice = await newPractice.save();
-
-        const userObj = await user.findById(factoryId);
-        if (!userObj) {
-            return res.status(404).send({ message: 'User not found' });
-        }
-
-        userObj.practices.push(savedPractice._id);
-        userObj.Points += parsedPoints;
-        await userObj.save();
-
-        res.redirect("/tax");
-    } catch (err) {
-        console.error('Error during practice submission:', err);
-        res.status(500).send({ error: 'Internal server error' });
-    }
+const extractProofDetails = (text) => {
+    const cleanedText = text.replace(/\u00A0/g, ' '); // Replace non-breaking spaces
+    const proofMatch = cleanedText.match(/Proof\s*ID[:\-]?\s*([A-Z0-9]+)/i);
+    const factoryMatch = cleanedText.match(/Factory\s*Name[:\-]?\s*([^\n\r]+)/i);
+    return {
+        proofId: proofMatch ? proofMatch[1].trim().toUpperCase() : null,
+        factoryName: factoryMatch ? factoryMatch[1].trim() : null
+    };
 };
+
+
+// 🧠 Final addPractice function with auto-verification
+exports.addPractice = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).send({ message: 'Not authenticated' });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secretKey');
+    const factoryId = decoded.id;
+
+    const { practice, description, points } = req.body;
+    if (!practice || !description || points === undefined) {
+      return res.status(400).send({ message: 'All fields are required' });
+    }
+
+    if (!req.file || !req.file.buffer || req.file.buffer.length === 0) {
+      return res.status(400).send({ message: 'Uploaded file is empty or invalid' });
+    }
+
+    const parsedPoints = Number(points);
+    if (isNaN(parsedPoints)) {
+      return res.status(400).send({ message: 'Points must be a valid number' });
+    }
+
+    // Upload to Cloudinary
+    const proofFileUrl = await exports.upload(req.file.buffer);
+    // console.log(proofFileUrl);
+
+    if (!proofFileUrl || !proofFileUrl.startsWith("http")) {
+      throw new Error("Invalid Cloudinary file URL");
+    }
+
+    // Download and parse file
+    const fileResponse = await axios.get(proofFileUrl, { responseType: "arraybuffer" });
+console.log(fileResponse);
+    const fileBuffer = Buffer.from(fileResponse.data, "binary");
+    console.log(fileBuffer);
+
+    const isPDF = req.file.originalname.toLowerCase().endsWith(".pdf");
+    console.log(isPDF);
+    let extractedText = "";
+
+    if (isPDF) {
+      try {
+        const pdfData = await pdfParse(fileBuffer);
+        console.log(pdfData);
+        extractedText = pdfData.text;
+        console.log("extracted text",extractedText);
+        
+      } catch (err) {
+        return res.status(400).send({ error: "Invalid or corrupted PDF uploaded." });
+      }
+    } else {
+      const ocrResult = await Tesseract.recognize(fileBuffer, "eng");
+      extractedText = ocrResult.data.text;
+    }
+
+    // Extract details from text
+    const { proofId, factoryName } = extractProofDetails(extractedText);
+
+    const currentUser = await user.findById(factoryId);
+    if (!currentUser) {
+      return res.status(404).send({ message: "User not found." });
+    }
+
+    // Auto-approval logic
+    const match = proofId && factoryName
+      ? await ProofRegistry.findOne({
+          proofId,
+          factoryName: { $regex: new RegExp(`^${factoryName}$`, 'i') },
+        })
+      : null;
+
+    const isVerified = match && currentUser.name.toLowerCase() === factoryName?.toLowerCase();
+
+    if (isVerified) {
+      // Auto-approved → Save practice + add points
+      const newPractice = new Practice({
+        factory: factoryId,
+        practice,
+        description,
+        points: parsedPoints,
+        proofFile: proofFileUrl,
+        status: 'approved',
+        proofId,
+      });
+
+      await newPractice.save();
+      currentUser.practices.push(newPractice._id);
+      currentUser.Points += parsedPoints;
+      await currentUser.save();
+
+      return res.redirect('/tax');
+    } else {
+      const queryParams = new URLSearchParams({
+    proofId: proofId || '',
+    factoryName: factoryName || '',
+    practice,
+    proofFile: proofFileUrl
+  }).toString();
+
+  return res.redirect(`/verify?${queryParams}`);
+    }
+  } catch (err) {
+    console.error('Error in addPractice:', err.message || err);
+    res.status(500).send({ error: 'Internal server error', details: err.message });
+  }
+};
+
 
 // Create User
 exports.createUser = async (req, res) => {
@@ -415,4 +489,5 @@ exports.isLoggedIn = (req, res, next) => {
         return res.redirect("/login"); // Redirect to login page if token is invalid or expired
     }
 };
+
 
