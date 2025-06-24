@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verify Your Practice - EcoTrack</title>
+  <style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #121212;
+        color: #e0e0e0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    nav {
+        background-color: #1e1e1e;
+        padding: 15px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo {
+        font-size: 1.5em;
+        color: #e0e0e0;
+        font-weight: bold;
+    }
+
+    .nav-buttons {
+        display: flex;
+        justify-content: center;
+        flex-grow: 1;
+    }
+
+    .nav-buttons a {
+        color: #e0e0e0;
+        text-decoration: none;
+        font-size: 1.1em;
+        margin: 0 20px;
+        transition: color 0.3s;
+    }
+
+    .nav-buttons a:hover,
+    .logout a:hover {
+        color: #4CAF50;
+    }
+
+    .logout a {
+        color: #e0e0e0;
+        text-decoration: none;
+        font-size: 1.1em;
+    }
+
+    h1 {
+        text-align: center;
+        margin: 30px 0;
+    }
+
+    form {
+        background-color: #1e1e1e;
+        padding: 30px;
+        border-radius: 12px;
+        max-width: 600px;
+        margin: auto;
+    }
+
+    label {
+        font-weight: bold;
+        display: block;
+        margin: 15px 0 5px;
+    }
+
+    input, textarea, select {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        background-color: #333;
+        color: #fff;
+        border: 1px solid #444;
+        border-radius: 8px;
+    }
+
+    input[type="file"] {
+        background: none;
+    }
+
+    input[type="checkbox"] {
+        width: auto;
+        margin-right: 10px;
+    }
+
+    .terms {
+        font-size: 0.9em;
+        color: #aaa;
+        margin-bottom: 15px;
+    }
+
+    button {
+        width: 100%;
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px;
+        font-size: 1.1em;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    .form-footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 0.9em;
+        color: #bbb;
+    }
+
+    .form-footer a {
+        color: #4CAF50;
+        text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">EcoTrack</div>
+    <div class="nav-buttons">
+        <a href="/home">Home</a>
+        <a href="/tax">Avail Tax</a>
+        <a href="/profile">Profile</a>
+    </div>
+    <div class="logout">
+        <a href="/logout">Logout</a>
+    </div>
+  </nav>
+
+  <h1>Verify and Submit Your Practice</h1>
+
+  <form action="/confirm" method="POST" enctype="multipart/form-data">
+    <label>Sustainable Practice</label>
+    <input type="text" name="practice" value="<%= practice %>" required />
+
+    <label>Description</label>
+    <textarea name="description" rows="4" required><%= description %></textarea>
+
+    <label>Points</label>
+    <input type="number" name="points" value="<%= points %>" readonly />
+
+    <label>Upload Proof of Implementation</label>
+    <input type="file" name="proofFile" accept="image/*,application/pdf" required />
+
+    <label>
+      <input type="checkbox" name="dataCorrect" value="true" required />
+      I confirm the above data is accurate and truthful.
+    </label>
+
+    <div class="terms">
+      <p><strong>Terms & Conditions:</strong></p>
+      <p>If any data is found to be incorrect, the user will be permanently blocked from accessing the website.</p>
+    </div>
+
+    <button type="submit">Submit Practice</button>
+  </form>
+
+  <div class="form-footer">
+    <p>Need to go back and edit? <a href="/practices">Return to form</a></p>
+  </div>
+</body>
+</html>
