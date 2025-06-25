@@ -189,20 +189,19 @@ exports.addPractice = async (req, res) => {
 
     // Download and parse file
     const fileResponse = await axios.get(proofFileUrl, { responseType: "arraybuffer" });
-console.log(fileResponse);
+
     const fileBuffer = Buffer.from(fileResponse.data, "binary");
-    console.log(fileBuffer);
+    
 
     const isPDF = req.file.originalname.toLowerCase().endsWith(".pdf");
-    console.log(isPDF);
     let extractedText = "";
 
     if (isPDF) {
       try {
         const pdfData = await pdfParse(fileBuffer);
-        console.log(pdfData);
+        
         extractedText = pdfData.text;
-        console.log("extracted text",extractedText);
+        
         
       } catch (err) {
         return res.status(400).send({ error: "Invalid or corrupted PDF uploaded." });
@@ -253,6 +252,7 @@ console.log(fileResponse);
     proofId: proofId || '',
     factoryName: factoryName || '',
     practice,
+    points: parsedPoints.toString(),
     proofFile: proofFileUrl
   }).toString();
 
@@ -489,5 +489,64 @@ exports.isLoggedIn = (req, res, next) => {
         return res.redirect("/login"); // Redirect to login page if token is invalid or expired
     }
 };
+
+exports.verifyPage = (req, res) => {
+  const { proofId, factoryName, practice, proofFile,points } = req.query;
+
+  res.render('verifyform', {
+    proofId,
+    factoryName,
+    practice,
+    proofFile,
+    points,
+  });
+};
+
+exports.submitVerification = async (req, res) => {
+  try {
+
+    const token = req.cookies.token;
+    if (!token) return res.status(401).send({ error: "Not authenticated" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "secretKey");
+    const userId = decoded.id;
+    const { proofId, factoryName, practice, proofFile,points } = req.body;
+
+    console.log(proofId, factoryName, practice, proofFile,points);
+
+    if (!proofId || !factoryName || !practice || !proofFile|| !points) {
+      return res.status(400).send({ error: "Missing verification data" });
+    }
+
+    // Find the user matching the factory name (case-insensitive)
+     const matchedUser = await user.findById(userId);
+
+    if (!matchedUser) {
+      return res.status(404).send({ error: "Factory/User not found for verification" });
+    }
+
+    // Create and approve the practice
+    const newPractice = new Practice({
+      factory: matchedUser._id,
+      practice,
+      description: `Manually verified for factory ${factoryName} with Proof ID ${proofId}`,
+      points, 
+      proofFile,
+      status: "pending"
+    });
+
+    await newPractice.save();
+
+    matchedUser.practices.push(newPractice._id);
+    await matchedUser.save();
+
+    res.redirect('/tax');
+  } catch (err) {
+    console.error("Manual verification failed:", err);
+    res.status(500).send({ error: "Internal Server Error during verification" });
+  }
+};
+
+
 
 

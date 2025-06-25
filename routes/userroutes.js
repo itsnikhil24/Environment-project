@@ -24,9 +24,11 @@ router.get("/home",userController.isLoggedIn, userController.home);
 router.get("/ngo",userController.isLoggedIn, userController.ngoPage);
 router.get("/tax",userController.isLoggedIn, userController.taxPage);
 router.get("/profile",userController.isLoggedIn, userController.profile);
+router.get('/verify', userController.verifyPage);
 
 // Apply for tax benefits
 router.post("/apply-tax",userController.isLoggedIn, userController.applyTax);
+router.post('/verify/submit', userController.submitVerification);
 
 
 router.get("/logout", userController.logout);

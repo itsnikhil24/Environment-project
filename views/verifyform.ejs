@@ -2,170 +2,213 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Verify Your Practice - EcoTrack</title>
+  <title>Manual Verification</title>
   <style>
     body {
-        font-family: 'Arial', sans-serif;
-        background-color: #121212;
-        color: #e0e0e0;
-        margin: 0;
-        box-sizing: border-box;
+      background-color: #121212;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding-top: 40px;
     }
 
-    nav {
-        background-color: #1e1e1e;
-        padding: 15px 40px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .logo {
-        font-size: 1.5em;
-        color: #e0e0e0;
-        font-weight: bold;
-    }
-
-    .nav-buttons {
-        display: flex;
-        justify-content: center;
-        flex-grow: 1;
-    }
-
-    .nav-buttons a {
-        color: #e0e0e0;
-        text-decoration: none;
-        font-size: 1.1em;
-        margin: 0 20px;
-        transition: color 0.3s;
-    }
-
-    .nav-buttons a:hover,
-    .logout a:hover {
-        color: #4CAF50;
-    }
-
-    .logout a {
-        color: #e0e0e0;
-        text-decoration: none;
-        font-size: 1.1em;
+    .container {
+      background-color: #1e1e1e;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 800px;
+      width: 90%;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
     }
 
     h1 {
-        text-align: center;
-        margin: 30px 0;
+      text-align: center;
+      margin-bottom: 30px;
+      color: #03dac6;
+    }
+
+    p {
+      margin: 15px 0;
+      font-size: 16px;
+    }
+
+    strong {
+      color: #bb86fc;
+    }
+
+    embed, img {
+      display: block;
+      margin: 20px auto;
+      border: 1px solid #333;
+      border-radius: 6px;
     }
 
     form {
-        background-color: #1e1e1e;
-        padding: 30px;
-        border-radius: 12px;
-        max-width: 600px;
-        margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 30px;
     }
 
-    label {
-        font-weight: bold;
-        display: block;
-        margin: 15px 0 5px;
+    .checkbox-wrapper {
+      margin-top: 24px;
+      padding: 15px;
+      background-color: #1f2a3a;
+      border: 1px solid #3c6faf;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
     }
 
-    input, textarea, select {
-        width: 100%;
-        padding: 12px;
-        margin-bottom: 15px;
-        background-color: #333;
-        color: #fff;
-        border: 1px solid #444;
-        border-radius: 8px;
+    .checkbox-wrapper input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      margin-right: 10px;
+      accent-color: #2196F3;
+      cursor: pointer;
     }
 
-    input[type="file"] {
-        background: none;
+    .checkbox-wrapper label {
+      font-size: 14px;
+      font-weight: 400;
+      margin: 0;
+      cursor: pointer;
     }
 
-    input[type="checkbox"] {
-        width: auto;
-        margin-right: 10px;
+    button[type="submit"] {
+      margin-top: 25px;
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #444;
+      color: #aaa;
+      border: none;
+      border-radius: 6px;
+      transition: background-color 0.3s ease;
+      cursor: not-allowed;
     }
 
-    .terms {
-        font-size: 0.9em;
-        color: #aaa;
-        margin-bottom: 15px;
+    button[type="submit"].active {
+      background-color: #00c97e;
+      color: #fff;
+      cursor: pointer;
     }
 
-    button {
-        width: 100%;
-        background-color: #4CAF50;
-        color: white;
-        padding: 14px;
-        font-size: 1.1em;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
+    /* Modal */
+    #termsModal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
     }
 
-    button:hover {
-        background-color: #45a049;
+    .modal-content {
+      background-color: #2b2b2b;
+      margin: 10% auto;
+      padding: 30px;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 10px;
+      text-align: center;
+      color: #fff;
     }
 
-    .form-footer {
-        text-align: center;
-        margin-top: 20px;
-        font-size: 0.9em;
-        color: #bbb;
+    .modal-content h3 {
+      margin-bottom: 15px;
     }
 
-    .form-footer a {
-        color: #4CAF50;
-        text-decoration: none;
+    .modal-content p {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .modal-content button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #00c97e;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .modal-content button:hover {
+      background-color: #00b371;
     }
   </style>
 </head>
 <body>
-  <nav>
-    <div class="logo">EcoTrack</div>
-    <div class="nav-buttons">
-        <a href="/home">Home</a>
-        <a href="/tax">Avail Tax</a>
-        <a href="/profile">Profile</a>
-    </div>
-    <div class="logout">
-        <a href="/logout">Logout</a>
-    </div>
-  </nav>
+  <div class="container">
+    <h1>Manual Verification Required</h1>
 
-  <h1>Verify and Submit Your Practice</h1>
+    <p><strong>Practice:</strong> <%= practice %></p>
+    <p><strong>Factory Name (Extracted):</strong> <%= factoryName %></p>
+    <p><strong>Proof ID (Extracted):</strong> <%= proofId %></p>
 
-  <form action="/confirm" method="POST" enctype="multipart/form-data">
-    <label>Sustainable Practice</label>
-    <input type="text" name="practice" value="<%= practice %>" required />
+    <% if (proofFile) { %>
+      <p><strong>Proof Document:</strong></p>
+      <% if (proofFile.endsWith('.pdf')) { %>
+        <embed src="<%= proofFile %>" width="100%" height="500px" type="application/pdf" />
+      <% } else { %>
+        <img src="<%= proofFile %>" alt="Proof Image" width="100%" />
+      <% } %>
+    <% } %>
 
-    <label>Description</label>
-    <textarea name="description" rows="4" required><%= description %></textarea>
+    <form action="/verify/submit" method="POST" id="verifyForm">
+      <input type="hidden" name="proofId" value="<%= proofId %>" />
+      <input type="hidden" name="factoryName" value="<%= factoryName %>" />
+      <input type="hidden" name="practice" value="<%= practice %>" />
+      <input type="hidden" name="proofFile" value="<%= proofFile %>" />
+      <input type="hidden" name="points" value="<%= points %>" />
 
-    <label>Points</label>
-    <input type="number" name="points" value="<%= points %>" readonly />
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="confirmCheck" />
+        <label for="confirmCheck">I confirm that the above information is accurate.</label>
+      </div>
 
-    <label>Upload Proof of Implementation</label>
-    <input type="file" name="proofFile" accept="image/*,application/pdf" required />
-
-    <label>
-      <input type="checkbox" name="dataCorrect" value="true" required />
-      I confirm the above data is accurate and truthful.
-    </label>
-
-    <div class="terms">
-      <p><strong>Terms & Conditions:</strong></p>
-      <p>If any data is found to be incorrect, the user will be permanently blocked from accessing the website.</p>
-    </div>
-
-    <button type="submit">Submit Practice</button>
-  </form>
-
-  <div class="form-footer">
-    <p>Need to go back and edit? <a href="/practices">Return to form</a></p>
+      <button type="submit" id="submitBtn" disabled>Add Practice</button>
+    </form>
   </div>
+
+  <!-- Terms Modal -->
+  <div id="termsModal">
+    <div class="modal-content">
+      <h3>Terms & Conditions</h3>
+      <p>
+        By checking the confirmation, you agree that all submitted data is authentic.
+        Any fake or misleading documentation may lead to account suspension or legal action.
+      </p>
+      <button onclick="acceptTerms()">I Agree</button>
+    </div>
+  </div>
+
+  <script>
+    const checkbox = document.getElementById("confirmCheck");
+    const modal = document.getElementById("termsModal");
+    const submitBtn = document.getElementById("submitBtn");
+
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) {
+        checkbox.checked = false; // uncheck until user agrees
+        modal.style.display = "block";
+      }
+    });
+
+    function acceptTerms() {
+      modal.style.display = "none";
+      checkbox.checked = true;
+      submitBtn.disabled = false;
+      submitBtn.classList.add("active");
+    }
+  </script>
 </body>
 </html>
